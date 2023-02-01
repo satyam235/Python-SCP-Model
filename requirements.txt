@@ -1,0 +1,5 @@
+scp==0.14.4
+paramiko==2.8.1
+requests
+pyinstaller
+rich
