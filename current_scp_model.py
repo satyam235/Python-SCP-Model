@@ -101,15 +101,7 @@ if __name__ == "__main__":
     parser.add_argument("-remote_path", help="Remote Path", default=False,action="store",required=True)
     parser.add_argument("-local_path", help="Local Path", default=False,action="store",required=True)
 
-    printer("Starting the script",False)
-    # print the arguments used one by one
-    printer("IP Address: {}".format(args.ip_address),False)
-    printer("Port: {}".format(args.port),False)
-    printer("Username: {}".format(args.username),False)
-    printer("SSH Key Path: {}".format(args.ssh_key_path),False)
-    printer("Passphrase: {}".format(args.passphrase),False)
-    printer("Remote Path: {}".format(args.remote_path),False)
-    printer("Local Path: {}".format(args.local_path),False)
+ 
 
 
     args = parser.parse_args()
@@ -121,6 +113,17 @@ if __name__ == "__main__":
     PORT = args.port
     REMOTE_PATH = args.remote_path
     LOCAL_PATH = args.local_path
+
+
+    printer("Starting the script",False)
+    # print the arguments used one by one
+    printer("IP Address: {}".format(args.ip_address),False)
+    printer("Port: {}".format(args.port),False)
+    printer("Username: {}".format(args.username),False)
+    printer("SSH Key Path: {}".format(args.ssh_key_path),False)
+    printer("Passphrase: {}".format(args.passphrase),False)
+    printer("Remote Path: {}".format(args.remote_path),False)
+    printer("Local Path: {}".format(args.local_path),False)
 
     
 
