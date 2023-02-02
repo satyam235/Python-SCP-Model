@@ -37,6 +37,17 @@ def printer(msg, fail=False):
     else:
         print(msg)
 
+def get_private_key(ssh_key_path, passphrase):
+    try:
+        with open(ssh_key_path, 'r') as f:
+            key = RSAKey.from_private_key(f, password=passphrase)
+            printer("Private key loaded",False)
+            return key
+    except Exception as ex:
+        printer("Failed to get private key",True)
+        printer(str(ex),True)
+        return None
+
 def get_ssh_client(ip_address,ssh_port,username,ssh_key_path,passphrase,timeout=10):
     try:       
         ssh_client = SSHClient()
@@ -45,7 +56,7 @@ def get_ssh_client(ip_address,ssh_port,username,ssh_key_path,passphrase,timeout=
         ssh_client.connect(
             hostname=ip_address,
             username=username,
-            pkey=RSAKey.from_private_key_file(ssh_key_path,password=passphrase),
+            pkey=get_private_key(ssh_key_path, passphrase),
             port=ssh_port,
             passphrase=passphrase,
             look_for_keys=False,
