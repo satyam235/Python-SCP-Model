@@ -12,7 +12,7 @@ from pathlib import Path
 import argparse
 from rich.console import Console
 from scp import SCPClient, SCPException
-
+import sys
 
 console = Console()
 args = None
@@ -38,7 +38,7 @@ def printer(msg, fail=False):
         print(msg)
 
 def get_ssh_client(ip_address,ssh_port,username,ssh_key_path,passphrase,timeout=10):
-    try:
+    try:       
         ssh_client = SSHClient()
         ssh_client.set_missing_host_key_policy(AutoAddPolicy())
 
@@ -59,14 +59,20 @@ def get_ssh_client(ip_address,ssh_port,username,ssh_key_path,passphrase,timeout=
         printer(str(ex),True)
         return None
 
-def scp_get_data(ssh_client, remote_path, local_path, recursive=False, timeout=1):
+def progress4(filename, size, sent, peername):
+    sys.stdout.write("(%s:%s) %s's progress: %.2f%%   \r" % (peername[0], peername[1], filename, float(sent)/float(size)*100) )
+
+def scp_get_data(ssh_client, remote_path, local_path, recursive=False, timeout=10):
+    scp_client = None
     try:
-        scp_client = SCPClient(ssh_client.get_transport(), socket_timeout=timeout)
+        scp_client = SCPClient(ssh_client.get_transport(),socket_timeout=timeout,progress4=progress4)
+        printer("Downloading files from remote path {} to local path {}".format(remote_path, local_path),False)
         scp_client.get(remote_path, local_path, recursive)
         printer("Files downloaded from remote path {} to local path {}".format(remote_path, local_path),False)
         return True
     except SCPException as ex:
         printer("Failed to download files from remote path {} to local path {}".format(remote_path, local_path),True)
+        printer(str(ex),True)
         return False
 
     finally:
@@ -82,6 +88,7 @@ if __name__ == "__main__":
     global PORT
     global REMOTE_PATH
     global LOCAL_PATH
+    ssh_client = None
 
     parser = argparse.ArgumentParser(description='Current SCP Model')
     parser.add_argument('-d','--debug', action='store_true', help='Enable debug mode')
@@ -104,11 +111,12 @@ if __name__ == "__main__":
     PORT = args.port
     REMOTE_PATH = args.remote_path
     LOCAL_PATH = args.local_path
+
     
 
     ssh_client = get_ssh_client(IP_ADDRESS,PORT,USERNAME,SSH_KEY_PATH,PASSPHRASE)
     if ssh_client:
-        sucess = scp_get_data(ssh_client,REMOTE_PATH,LOCAL_PATH,recursive=True,timeout=1)
+        sucess = scp_get_data(ssh_client,REMOTE_PATH,LOCAL_PATH,recursive=True)
         print("----------------------------------------")
     else:
         sucess = False
