@@ -65,7 +65,7 @@ def progress4(filename, size, sent, peername):
 def scp_get_data(ssh_client, remote_path, local_path, recursive=False, timeout=10):
     scp_client = None
     try:
-        scp_client = SCPClient(ssh_client.get_transport(),socket_timeout=timeout,progress4=progress4)
+        scp_client = SCPClient(ssh_client.get_transport(),socket_timeout=timeout)
         printer("Downloading files from remote path {} to local path {}".format(remote_path, local_path),False)
         scp_client.get(remote_path, local_path, recursive)
         printer("Files downloaded from remote path {} to local path {}".format(remote_path, local_path),False)
